@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Cuestionario de Tesorería</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* Una sola columna de lectura, preguntas numeradas por bloque; barra marino de Thelsa arriba y avance pegado al pie. */
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --ink: #14202e; --ink-soft: #4b5a6b; --ink-faint: #7b8794;
+    --line: #dde3ea; --barra: #002e5c; --brand: #0b4f9e; --accent: #d81b33; --ok: #1f7a4d; --ok-bg: #e6f4ec; --warn-bg: #fff4e0; --warn: #9a5b00;
+    --f: 'Geist', -apple-system, 'Segoe UI', system-ui, sans-serif; --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0b121c; --card: #141d2a; --ink: #e6edf5; --ink-soft: #b4c0cf; --ink-faint: #8392a4; --line: #27354a; --barra: #0d2a4d; --brand: #5aa0ec;
+    --ok: #5fcf8f; --ok-bg: #12301f; --warn-bg: #3a2a08; --warn: #f0b64a; color-scheme: dark; } }
+  :root[data-theme="dark"] {
+    --bg: #0b121c; --card: #141d2a; --ink: #e6edf5; --ink-soft: #b4c0cf; --ink-faint: #8392a4; --line: #27354a; --barra: #0d2a4d; --brand: #5aa0ec;
+    --ok: #5fcf8f; --ok-bg: #12301f; --warn-bg: #3a2a08; --warn: #f0b64a; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f); -webkit-font-smoothing: antialiased; }
+  .barra { background: var(--barra); color: #fff; }
+  .barra .in { max-width: 760px; margin: 0 auto; padding-block: 18px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .barra .marca { font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+  .barra h1 { margin: 6px 0 4px; font-size: 26px; font-weight: 650; letter-spacing: -.015em; text-wrap: balance; }
+  .barra p { margin: 0; color: #c9d8ea; font-size: 14px; max-width: 62ch; }
+  main { max-width: 760px; margin: 0 auto; padding-block: 22px 120px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .nota { background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--brand); border-radius: 8px; padding: 12px 14px; color: var(--ink-soft); font-size: 14px; margin-bottom: 22px; }
+  .nota b { color: var(--ink); }
+  section { margin-top: 30px; }
+  section h2 { font-size: 18px; font-weight: 650; margin: 0 0 4px; letter-spacing: -.01em; }
+  section .sub { margin: 0 0 14px; color: var(--ink-faint); font-size: 13.5px; }
+  .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px 16px; }
+  .q + .q { margin-top: 10px; }
+  .q label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .q label .n { font-family: var(--mono); font-weight: 500; color: var(--brand); margin-right: 8px; font-size: 13px; }
+  .q .ayuda { color: var(--ink-faint); font-size: 13px; margin: 0 0 8px; }
+  textarea, input[type=text], select { width: 100%; font: inherit; font-size: 15px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; }
+  textarea { min-height: 76px; resize: vertical; }
+  textarea:focus, input:focus, select:focus { outline: 2px solid var(--brand); outline-offset: 1px; border-color: var(--brand); }
+  .q.ok { border-color: color-mix(in srgb, var(--ok) 55%, var(--line)); }
+  .quien { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 520px) { .quien { grid-template-columns: 1fr; } }
+  .pie { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .pie .in { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .avance { flex: 1 1 200px; min-width: 0; }
+  .avance .t { font-size: 13px; color: var(--ink-soft); display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+  .avance .b { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+  .avance .b i { display: block; height: 100%; width: 0; background: var(--brand); transition: width .3s ease; }
+  .btn { font: inherit; font-weight: 600; font-size: 14px; border-radius: 8px; padding: 10px 16px; cursor: pointer; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  .btn.p { background: var(--barra); border-color: var(--barra); color: #fff; }
+  .btn:disabled { opacity: .55; cursor: not-allowed; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .aviso { margin-top: 10px; padding: 10px 12px; border-radius: 8px; font-size: 14px; }
+  .aviso.ok { background: var(--ok-bg); color: var(--ok); }
+  .aviso.warn { background: var(--warn-bg); color: var(--warn); }
+  #hecho { display: none; }
+  @media (prefers-reduced-motion: reduce) { .avance .b i { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="barra"><div class="in">
+  <div class="marca">Thelsa · Sistemas</div>
+  <h1>Cuestionario de Tesorería</h1>
+  <p>Para entender cómo trabajan hoy Raquel y Angélica y construir el módulo de Tesorería a su medida. Son 18 preguntas; se puede contestar poco a poco: lo escrito se queda guardado en este navegador hasta que lo mandes.</p>
+</div></div>
+
+<main>
+  <div class="nota"><b>Cómo contestar:</b> con tus palabras, como se lo explicarías a alguien nuevo en el área. Si una pregunta no aplica, escribe "no aplica". Al terminar, mándalas con <b>Enviar por WhatsApp</b> o <b>Enviar por correo</b> (a Jonas, Sistemas). Si prefieres, <b>Copiar</b> o <b>Descargar</b> y mándalas como quieras.</div>
+
+  <section>
+    <h2>Quién contesta</h2>
+    <div class="q quien">
+      <div><label for="nombre">Nombre</label><input type="text" id="nombre" placeholder="Raquel, Angélica…" autocomplete="name"></div>
+      <div><label for="puesto">Puesto y desde cuándo</label><input type="text" id="puesto" placeholder="Tesorería, 3 años"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Cómo les llegan las remesas hoy</h2>
+    <p class="sub">Quién les manda qué, y por dónde.</p>
+    <div class="q"><label for="p1"><span class="n">1</span>¿Quiénes les mandan remesas o pagos, y por dónde llega cada uno?</label><p class="ayuda">Por ejemplo: administradores de sucursal por el SIT, Logística por Excel, Garantías por correo, RH por WhatsApp…</p><textarea id="p1"></textarea></div>
+    <div class="q"><label for="p2"><span class="n">2</span>¿Qué pagos les llegan que no son remesas (nómina, impuestos, rentas, AMEX, préstamos entre empresas)? ¿Cómo se enteran de esos?</label><textarea id="p2"></textarea></div>
+    <div class="q"><label for="p3"><span class="n">3</span>¿Qué revisan antes de aceptar una remesa para pago? ¿Qué las hace regresarla?</label><p class="ayuda">Factura, autorización, que el monto cuadre, que traiga la cuenta del beneficiario…</p><textarea id="p3"></textarea></div>
+    <div class="q"><label for="p4"><span class="n">4</span>¿Quién autoriza qué? ¿Hay montos o tipos de gasto que necesitan un visto bueno extra (Sergio, Zayury, Armando…)?</label><textarea id="p4"></textarea></div>
+  </section>
+
+  <section>
+    <h2>Cómo pagan</h2>
+    <p class="sub">Desde que una remesa está lista hasta que el banco la aplica.</p>
+    <div class="q"><label for="p5"><span class="n">5</span>Ya tenemos las reglas de qué cuenta paga según la empresa y la sucursal. ¿Hay excepciones por tipo de gasto (nómina, impuestos, dólares, préstamos)?</label><textarea id="p5"></textarea></div>
+    <div class="q"><label for="p6"><span class="n">6</span>¿Cómo deciden si un pago va por SPEI o por pago a terceros? ¿Solo depende del banco del beneficiario?</label><textarea id="p6"></textarea></div>
+    <div class="q"><label for="p7"><span class="n">7</span>¿Cuántas veces al día arman los archivos para el banco y a qué horas? ¿Hay hora límite del banco?</label><textarea id="p7"></textarea></div>
+    <div class="q"><label for="p8"><span class="n">8</span>Cuando pagan a alguien nuevo que no está dado de alta en el portal del banco, ¿cómo lo dan de alta y dónde guardan su CLABE?</label><textarea id="p8"></textarea></div>
+    <div class="q"><label for="p9"><span class="n">9</span>Cuando un pago rebota en el banco (CLABE mala, cuenta cerrada), ¿qué hacen y cómo avisan?</label><textarea id="p9"></textarea></div>
+    <div class="q"><label for="p10"><span class="n">10</span>¿Cómo se reparten el trabajo entre las dos? (por sucursal, por empresa, por tipo de remesa) ¿Y cuando una no está?</label><textarea id="p10"></textarea></div>
+    <div class="q"><label for="p11"><span class="n">11</span>¿Qué datos de cada pago escriben en el archivo del banco y cuáles en el concentrado? ¿Alguno lo escriben varias veces?</label><textarea id="p11"></textarea></div>
+  </section>
+
+  <section>
+    <h2>Lo que registran después</h2>
+    <p class="sub">CONTPAQi Bancos, el Excel de saldos y los cierres.</p>
+    <div class="q"><label for="p12"><span class="n">12</span>En CONTPAQi Bancos, la categoría de cada egreso: ¿quién la pone, ustedes o cada administrador? ¿Por qué muchos quedan sin categoría?</label><textarea id="p12"></textarea></div>
+    <div class="q"><label for="p13"><span class="n">13</span>Los depósitos de clientes: ¿los registran ustedes o Cobranza? ¿Cómo saben de quién es cada depósito?</label><textarea id="p13"></textarea></div>
+    <div class="q"><label for="p14"><span class="n">14</span>¿Qué cuadran al cierre del día y del mes, y contra qué? (saldo del portal, Excel de saldos, Bancos)</label><textarea id="p14"></textarea></div>
+    <div class="q"><label for="p15"><span class="n">15</span>¿Qué reportes les piden Sergio o Zayury, cada cuánto, y de dónde los sacan?</label><p class="ayuda">Flujo de la semana, resumen del mes, saldos por empresa…</p><textarea id="p15"></textarea></div>
+  </section>
+
+  <section>
+    <h2>Para diseñar bien la pantalla</h2>
+    <div class="q"><label for="p16"><span class="n">16</span>Si pudieran quitar una sola cosa de su día, ¿cuál sería?</label><textarea id="p16"></textarea></div>
+    <div class="q"><label for="p17"><span class="n">17</span>Del programa actual que pasa las remesas operativas a Bancos, ¿qué les ha fallado o qué les gustaría distinto?</label><textarea id="p17"></textarea></div>
+    <div class="q"><label for="p18"><span class="n">18</span>¿Cómo les gustaría enterarse de que llegó una remesa nueva? (correo, aviso en el sistema, WhatsApp) ¿Y de que un pago ya se aplicó?</label><textarea id="p18"></textarea></div>
+  </section>
+
+  <div id="msg"></div>
+  <div class="aviso ok" id="hecho">Se abrió WhatsApp o tu correo con las respuestas listas para enviar a Jonas. Si no se abrió, usa Copiar o Descargar.</div>
+</main>
+
+<div class="pie"><div class="in">
+  <div class="avance"><div class="t"><span id="avT">0 de 18 contestadas</span><span id="guardado"></span></div><div class="b"><i id="avB"></i></div></div>
+  <button class="btn" id="btnCopiar" type="button">Copiar</button>
+  <button class="btn" id="btnBajar" type="button">Descargar</button>
+  <button class="btn p" id="btnCorreo" type="button">Enviar por correo</button>
+  <button class="btn p" id="btnWa" type="button">Enviar por WhatsApp</button>
+</div></div>
+
+<script>
+(function () {
+  const N = 18, ids = ['nombre', 'puesto'];
+  for (let i = 1; i <= N; i++) ids.push('p' + i);
+  const $ = id => document.getElementById(id);
+  const PREG = {};
+  document.querySelectorAll('.q label').forEach(l => { PREG[l.htmlFor] = l.textContent.replace(/^\d+\s*/, '').trim(); });
+  const CLAVE = 'tesoreria-cuestionario-borrador';
+
+  function leer() { const o = {}; ids.forEach(id => { o[id] = $(id).value.trim(); }); return o; }
+  function contestadas() { let n = 0; for (let i = 1; i <= N; i++) if ($('p' + i).value.trim()) n++; return n; }
+  function pintar() {
+    const n = contestadas();
+    $('avT').textContent = n + ' de ' + N + ' contestadas';
+    $('avB').style.width = Math.round(n / N * 100) + '%';
+    for (let i = 1; i <= N; i++) $('p' + i).closest('.q').classList.toggle('ok', !!$('p' + i).value.trim());
+  }
+  let t;
+  function guardarBorrador() {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      try { localStorage.setItem(CLAVE, JSON.stringify(leer())); $('guardado').textContent = 'Guardado en este navegador'; } catch (e) { $('guardado').textContent = ''; }
+    }, 400);
+  }
+  try {
+    const b = JSON.parse(localStorage.getItem(CLAVE) || 'null');
+    if (b) ids.forEach(id => { if (b[id]) $(id).value = b[id]; });
+  } catch (e) { /* sin almacenamiento: se empieza en blanco */ }
+  ids.forEach(id => $(id).addEventListener('input', () => { pintar(); guardarBorrador(); }));
+  pintar();
+
+  function texto() {
+    const r = leer();
+    const lineas = ['CUESTIONARIO DE TESORERÍA', 'Nombre: ' + (r.nombre || '—'), 'Puesto: ' + (r.puesto || '—'), ''];
+    for (let i = 1; i <= N; i++) lineas.push(i + '. ' + PREG['p' + i], r['p' + i] || '(sin respuesta)', '');
+    return lineas.join('\n');
+  }
+  function aviso(clase, html) { $('msg').innerHTML = '<div class="aviso ' + clase + '">' + html + '</div>'; }
+
+  $('btnCopiar').addEventListener('click', async () => {
+    const tx = texto();
+    try { await navigator.clipboard.writeText(tx); aviso('ok', 'Respuestas copiadas. Pégalas en un WhatsApp o correo a Jonas.'); }
+    catch (e) {
+      const ta = document.createElement('textarea'); ta.value = tx; ta.style.cssText = 'position:fixed;left:-9999px'; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); aviso('ok', 'Respuestas copiadas. Pégalas en un WhatsApp o correo a Jonas.'); }
+      catch (e2) { aviso('warn', 'No se pudo copiar solo. Selecciona el texto de abajo y cópialo a mano:<br><textarea style="margin-top:8px;min-height:160px">' + tx.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</textarea>'); }
+      document.body.removeChild(ta);
+    }
+  });
+
+  // Aquí no hay base de datos: las respuestas van a Jonas (Sistemas) por WhatsApp o correo, o se copian/descargan.
+  const CORREO = 'servicioti@thelsa.com';
+  function listo() {
+    const r = leer();
+    if (!r.nombre) { aviso('warn', 'Escribe tu nombre arriba antes de enviar.'); $('nombre').focus(); return false; }
+    if (contestadas() === 0) { aviso('warn', 'Todavía no hay ninguna respuesta.'); return false; }
+    return true;
+  }
+  $('btnBajar').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿' + texto()], { type: 'text/plain;charset=utf-8' }));
+    a.download = 'Cuestionario Tesoreria - ' + (leer().nombre || 'respuestas') + '.txt';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    aviso('ok', 'Archivo descargado. Mándaselo a Jonas por WhatsApp o correo.');
+  });
+  $('btnWa').addEventListener('click', () => {
+    if (!listo()) return;
+    const tx = texto();
+    // WhatsApp acepta textos largos por la liga; si es enorme, se manda en dos partes
+    const partes = tx.length > 6000 ? [tx.slice(0, 6000), tx.slice(6000)] : [tx];
+    window.open('https://wa.me/?text=' + encodeURIComponent(partes[0]), '_blank', 'noopener');
+    $('hecho').style.display = 'block'; $('msg').innerHTML = partes.length > 1 ? '<div class="aviso warn">Las respuestas son largas: después de mandar la primera parte, usa <b>Copiar</b> para mandar el resto.</div>' : '';
+  });
+  $('btnCorreo').addEventListener('click', () => {
+    if (!listo()) return;
+    const tx = texto();
+    const asunto = 'Cuestionario de Tesorería - ' + leer().nombre;
+    if (tx.length > 1800) {
+      // El correo no acepta textos largos en la liga: se copian y se abre el correo vacío
+      navigator.clipboard?.writeText(tx).catch(() => {});
+      aviso('ok', 'Las respuestas quedaron copiadas: pégalas (Ctrl + V) en el correo que se abre. Si no se abre, escribe a <b>' + CORREO + '</b>.');
+    }
+    window.location.href = 'mailto:' + CORREO + '?subject=' + encodeURIComponent(asunto) + '&body=' + encodeURIComponent(tx.length > 1800 ? '(Pega aquí las respuestas con Ctrl + V)' : tx);
+    $('hecho').style.display = 'block';
+  });
+})();
+</script>
+</body>
+</html>
