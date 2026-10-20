@@ -45,6 +45,11 @@
   .q.ok { border-color: color-mix(in srgb, var(--ok) 55%, var(--line)); }
   .quien { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media (max-width: 520px) { .quien { grid-template-columns: 1fr; } }
+  .docs .chk { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; font-size: 14.5px; padding: 8px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .docs .chk:last-of-type { border-bottom: 0; margin-bottom: 10px; }
+  .docs .chk input { width: 18px; height: 18px; margin-top: 2px; flex: none; accent-color: var(--brand); }
+  .docs .chk em { font-style: normal; color: var(--ink-faint); }
+  .docs > label[for] { margin-top: 6px; }
   .pie { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--line); padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .pie .in { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .avance { flex: 1 1 200px; min-width: 0; }
@@ -67,7 +72,7 @@
 <div class="barra"><div class="in">
   <div class="marca">Thelsa · Sistemas</div>
   <h1>Cuestionario de Tesorería</h1>
-  <p>Para entender cómo trabajan hoy Raquel y Angélica y construir el módulo de Tesorería a su medida. Son 18 preguntas; se puede contestar poco a poco: lo escrito se queda guardado en este navegador hasta que lo mandes.</p>
+  <p>Para entender cómo trabajan hoy Raquel y Angélica y construir el módulo de Tesorería a su medida. Son 18 preguntas y una lista de documentos; se puede contestar poco a poco: lo escrito se queda guardado en este navegador hasta que lo mandes.</p>
 </div></div>
 
 <main>
@@ -118,6 +123,23 @@
     <div class="q"><label for="p18"><span class="n">18</span>¿Cómo les gustaría enterarse de que llegó una remesa nueva? (correo, aviso en el sistema, WhatsApp) ¿Y de que un pago ya se aplicó?</label><textarea id="p18"></textarea></div>
   </section>
 
+  <section>
+    <h2>Documentos que necesitamos</h2>
+    <p class="sub">Mándalos por correo a <b>servicioti@thelsa.com</b> o por Teams a Jonas (Sistemas). Pueden ser de un día pasado, con datos reales: solo se usan para copiar el formato. Marca los que ya mandaste.</p>
+    <div class="q docs">
+      <label class="chk"><input type="checkbox" id="d1"> <span><b>Los 3 archivos que suben a los bancos</b>, tal cual los suben: SPEI de Banorte, pago a terceros de Banorte y el de Bajío. <em>Es lo más importante: el sistema los va a generar idénticos.</em></span></label>
+      <label class="chk"><input type="checkbox" id="d2"> <span><b>Capturas de la pantalla del portal</b> de Banorte y de Bajío donde cargan ese archivo (la que pide el archivo y la que confirma).</span></label>
+      <label class="chk"><input type="checkbox" id="d3"> <span><b>Si el banco les dio un instructivo o formato oficial</b> del archivo (por ejemplo "layout de pago a terceros"), ese documento.</span></label>
+      <label class="chk"><input type="checkbox" id="d4"> <span><b>El concentrado de salidas bancarias</b> (TH-FO-AF-33) de la semana más reciente, el de cada una.</span></label>
+      <label class="chk"><input type="checkbox" id="d5"> <span><b>El Excel de Saldos Bancarios</b> del mes en curso (ya tenemos el de septiembre).</span></label>
+      <label class="chk"><input type="checkbox" id="d6"> <span><b>Un ejemplo de cada cosa que les llega en Excel o correo</b> que no sea el concentrado: remesas operativas, foráneas, pagos fijos, lo que mande cada área.</span></label>
+      <label class="chk"><input type="checkbox" id="d7"> <span><b>La lista de cuentas bancarias de cada empresa</b>: banco, moneda, para qué sirve (concentradora, puente, de sucursal, tarjeta de gastos) y cómo se llama en CONTPAQi Bancos. <em>Los números de cuenta solo por correo, nunca por WhatsApp.</em></span></label>
+      <label class="chk"><input type="checkbox" id="d8"> <span><b>Un ejemplo de los reportes que entregan a dirección</b> (flujo de la semana, resumen del mes) y, si existe, el formato de autorización de una remesa.</span></label>
+      <label for="p19">¿Algo más que nos ayude a entender su trabajo? (otro archivo, un procedimiento escrito, una duda)</label>
+      <textarea id="p19"></textarea>
+    </div>
+  </section>
+
   <div id="msg"></div>
   <div class="aviso ok" id="hecho">Se abrió WhatsApp o tu correo con las respuestas listas para enviar a Jonas. Si no se abrió, usa Copiar o Descargar.</div>
 </main>
@@ -132,14 +154,16 @@
 
 <script>
 (function () {
-  const N = 18, ids = ['nombre', 'puesto'];
+  const N = 18, ids = ['nombre', 'puesto', 'p19'];
   for (let i = 1; i <= N; i++) ids.push('p' + i);
+  const DOCS = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8'];
   const $ = id => document.getElementById(id);
-  const PREG = {};
-  document.querySelectorAll('.q label').forEach(l => { PREG[l.htmlFor] = l.textContent.replace(/^\d+\s*/, '').trim(); });
+  const PREG = {}, DOCTX = {};
+  document.querySelectorAll('.q label[for]').forEach(l => { PREG[l.htmlFor] = l.textContent.replace(/^\d+\s*/, '').trim(); });
+  DOCS.forEach(d => { DOCTX[d] = $(d).parentElement.textContent.replace(/\s+/g, ' ').trim(); });
   const CLAVE = 'tesoreria-cuestionario-borrador';
 
-  function leer() { const o = {}; ids.forEach(id => { o[id] = $(id).value.trim(); }); return o; }
+  function leer() { const o = {}; ids.forEach(id => { o[id] = $(id).value.trim(); }); DOCS.forEach(d => { o[d] = $(d).checked; }); return o; }
   function contestadas() { let n = 0; for (let i = 1; i <= N; i++) if ($('p' + i).value.trim()) n++; return n; }
   function pintar() {
     const n = contestadas();
@@ -156,15 +180,19 @@
   }
   try {
     const b = JSON.parse(localStorage.getItem(CLAVE) || 'null');
-    if (b) ids.forEach(id => { if (b[id]) $(id).value = b[id]; });
+    if (b) { ids.forEach(id => { if (b[id]) $(id).value = b[id]; }); DOCS.forEach(d => { $(d).checked = !!b[d]; }); }
   } catch (e) { /* sin almacenamiento: se empieza en blanco */ }
   ids.forEach(id => $(id).addEventListener('input', () => { pintar(); guardarBorrador(); }));
+  DOCS.forEach(d => $(d).addEventListener('change', guardarBorrador));
   pintar();
 
   function texto() {
     const r = leer();
     const lineas = ['CUESTIONARIO DE TESORERÍA', 'Nombre: ' + (r.nombre || '—'), 'Puesto: ' + (r.puesto || '—'), ''];
     for (let i = 1; i <= N; i++) lineas.push(i + '. ' + PREG['p' + i], r['p' + i] || '(sin respuesta)', '');
+    lineas.push('DOCUMENTOS QUE YA MANDÉ:');
+    DOCS.forEach(d => lineas.push((r[d] ? '[x] ' : '[ ] ') + DOCTX[d]));
+    lineas.push('', 'Algo más: ' + (r.p19 || '(nada)'));
     return lineas.join('\n');
   }
   function aviso(clase, html) { $('msg').innerHTML = '<div class="aviso ' + clase + '">' + html + '</div>'; }
@@ -190,7 +218,7 @@
   }
   $('btnBajar').addEventListener('click', () => {
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob(['﻿' + texto()], { type: 'text/plain;charset=utf-8' }));
+    a.href = URL.createObjectURL(new Blob(['\uFEFF' + texto()], { type: 'text/plain;charset=utf-8' }));
     a.download = 'Cuestionario Tesoreria - ' + (leer().nombre || 'respuestas') + '.txt';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     aviso('ok', 'Archivo descargado. Mándaselo a Jonas por WhatsApp o correo.');
